@@ -9,7 +9,8 @@ import { Meteor } from "meteor/meteor";
 import MediaGallery from "../components/media/mediaGallery";
 import { Reaction } from "/client/api";
 import { ReactionProduct } from "/lib/api";
-import { Media, Revisions } from "/lib/collections";
+import { Revisions } from "/lib/collections";
+import { Media } from "/imports/plugins/core/files/client";
 
 function uploadHandler(files) {
   // TODO: It would be cool to move this logic to common ValidatedMethod, but
@@ -27,9 +28,9 @@ function uploadHandler(files) {
   const variantId = variant._id;
   const shopId = ReactionProduct.selectedProduct().shopId || Reaction.getShopId();
   const userId = Meteor.userId();
-  let count = Media.find({
+  let count = Media.findLocal({
     "metadata.variantId": variantId
-  }).count();
+  }).length;
 
   for (const file of files) {
     const fileObj = new FS.File(file);
@@ -84,7 +85,7 @@ const wrapComponent = (Comp) => (
     }
 
     handleRemoveMedia = (media) => {
-      const imageUrl = media.url();
+      const imageUrl = media.url({ store: "medium" });
       const mediaId = media._id;
 
       Alerts.alert({

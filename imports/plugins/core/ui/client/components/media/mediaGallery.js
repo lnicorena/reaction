@@ -7,6 +7,20 @@ import { Components } from "@reactioncommerce/reaction-components";
 import { Reaction } from "/client/api";
 
 class MediaGallery extends Component {
+  static propTypes = {
+    allowFeaturedMediaHover: PropTypes.bool,
+    editable: PropTypes.bool,
+    featuredMedia: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    media: PropTypes.arrayOf(PropTypes.object),
+    mediaGalleryHeight: PropTypes.number,
+    mediaGalleryWidth: PropTypes.number,
+    onDrop: PropTypes.func,
+    onMouseEnterMedia: PropTypes.func,
+    onMouseLeaveMedia: PropTypes.func,
+    onMoveMedia: PropTypes.func,
+    onRemoveMedia: PropTypes.func
+  };
+
   constructor() {
     super();
     this.state = {
@@ -205,19 +219,5 @@ class MediaGallery extends Component {
     return this.renderMediaGallery();
   }
 }
-
-MediaGallery.propTypes = {
-  allowFeaturedMediaHover: PropTypes.bool,
-  editable: PropTypes.bool,
-  featuredMedia: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-  media: PropTypes.arrayOf(PropTypes.object),
-  mediaGalleryHeight: PropTypes.number,
-  mediaGalleryWidth: PropTypes.number,
-  onDrop: PropTypes.func,
-  onMouseEnterMedia: PropTypes.func,
-  onMouseLeaveMedia: PropTypes.func,
-  onMoveMedia: PropTypes.func,
-  onRemoveMedia: PropTypes.func
-};
 
 export default MediaGallery;

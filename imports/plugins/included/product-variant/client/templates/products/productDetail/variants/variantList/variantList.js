@@ -6,8 +6,8 @@ import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
 import { Reaction } from "/client/api";
-import { ReactionProduct } from "/lib/api";
-import { Products, Media } from "/lib/collections";
+import { getPrimaryMediaForItem, ReactionProduct } from "/lib/api";
+import { Products } from "/lib/collections";
 
 function variantIsSelected(variantId) {
   const current = ReactionProduct.selectedVariant();
@@ -65,15 +65,7 @@ Template.variantList.onRendered(function () {
  */
 Template.variantList.helpers({
   media() {
-    const media = Media.findOne({
-      "metadata.variantId": this._id
-    }, {
-      sort: {
-        "metadata.priority": 1
-      }
-    });
-
-    return media instanceof FS.File ? media : false;
+    return getPrimaryMediaForItem({ variantId: this._id });
   },
   variants() {
     let inventoryTotal = 0;

@@ -4,7 +4,8 @@ import accounting from "accounting-js";
 import _ from "lodash";
 import { Meteor } from "meteor/meteor";
 import { i18next, Logger, Reaction, formatPriceString } from "/client/api";
-import { Media, Packages } from "/lib/collections";
+import { Packages } from "/lib/collections";
+import { getPrimaryMediaForOrderItem } from "/lib/api";
 import { composeWithTracker, registerComponent } from "@reactioncommerce/reaction-components";
 import Invoice from "../components/invoice.js";
 import { getOrderRiskStatus, getOrderRiskBadge, getBillingInfo } from "../helpers";
@@ -194,35 +195,6 @@ class InvoiceContainer extends Component {
       editedItems,
       value
     });
-  }
-
-  /**
-   * Media - find media based on a product/variant
-   * @param  {Object} item object containing a product and variant id
-   * @return {Object|false} An object contianing the media or false
-   */
-  handleDisplayMedia = (item) => {
-    const variantId = item.variants._id;
-    const { productId } = item;
-
-    const variantImage = Media.findOne({
-      "metadata.variantId": variantId,
-      "metadata.productId": productId
-    });
-
-    if (variantImage) {
-      return variantImage;
-    }
-
-    const defaultImage = Media.findOne({
-      "metadata.productId": productId,
-      "metadata.priority": 0
-    });
-
-    if (defaultImage) {
-      return defaultImage;
-    }
-    return false;
   }
 
   getRefundedItemsInfo = () => {
@@ -483,7 +455,7 @@ class InvoiceContainer extends Component {
         togglePopOver={this.togglePopOver}
         handleInputChange={this.handleInputChange}
         handleItemSelect={this.handleItemSelect}
-        displayMedia={this.handleDisplayMedia}
+        displayMedia={getPrimaryMediaForOrderItem}
         toggleUpdating={this.toggleUpdating}
         handleRefundItems={this.handleRefundItems}
         getRefundedItemsInfo={this.getRefundedItemsInfo}

@@ -1,7 +1,7 @@
 import { $ } from "meteor/jquery";
 import { Reaction } from "/client/api";
-import { ReactionProduct } from "/lib/api";
-import { Media } from "/lib/collections";
+import { getPrimaryMediaForItem, ReactionProduct } from "/lib/api";
+import { Media } from "/imports/plugins/core/files/client";
 import { Meteor } from "meteor/meteor";
 import { Session } from "meteor/session";
 import { Template } from "meteor/templating";
@@ -30,9 +30,9 @@ function uploadHandler(event) {
   const variantId = variant._id;
   const shopId = ReactionProduct.selectedProduct().shopId || Reaction.getShopId();
   const userId = Meteor.userId();
-  let count = Media.find({
+  let count = Media.findLocal({
     "metadata.variantId": variantId
-  }).count();
+  }).length;
   // TODO: we need to mark the first variant images somehow for productGrid.
   // But how do we know that this is the first, not second or other variant?
   // Question is open. For now if product has more than 1 top variant, everyone
@@ -78,19 +78,13 @@ function updateImagePriorities() {
 
 Template.productImageGallery.helpers({
   media() {
-    let mediaArray = [];
+    const product = ReactionProduct.selectedProduct();
     const variant = ReactionProduct.selectedVariant();
 
-    if (variant) {
-      mediaArray = Media.find({
-        "metadata.variantId": variant._id
-      }, {
-        sort: {
-          "metadata.priority": 1
-        }
-      });
-    }
-    return mediaArray;
+    return getPrimaryMediaForItem({
+      productId: product && product._id,
+      variantId: variant && variant._id
+    });
   },
   variant() {
     return ReactionProduct.selectedVariant();

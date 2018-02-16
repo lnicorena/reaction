@@ -51,33 +51,40 @@ class ProductGridItems extends Component {
   }
 
   renderMedia() {
-    if (this.props.media() === false) {
-      return (
-        <span className="product-image" style={{ backgroundImage: "url('/resources/placeholder.gif')" }} />
-      );
+    const { media } = this.props;
+    const fileRecord = media();
+
+    let url;
+    if (fileRecord) {
+      url = fileRecord.url({ store: "large" });
+    } else {
+      url = "/resources/placeholder.gif";
     }
+
     return (
-      <span className="product-image" style={{ backgroundImage: `url('${this.props.media().url({ store: "large" })}')` }}/>
+      <span className="product-image" style={{ backgroundImage: `url('${url}')` }}/>
     );
   }
 
   renderAdditionalMedia() {
-    if (this.props.additionalMedia() !== false) {
-      if (this.props.isMediumWeight()) {
-        return (
-          <div className={`product-additional-images ${this.renderVisible()}`}>
-            {this.props.additionalMedia().map((media) => (
-              <span
-                key={media._id}
-                className="product-image"
-                style={{ backgroundImage: `url('${media.url({ store: "medium" })}')` }}
-              />
-            ))}
-            {this.renderOverlay()}
-          </div>
-        );
-      }
-    }
+    const { additionalMedia, isMediumWeight } = this.props;
+    if (isMediumWeight()) return null;
+
+    const mediaArray = additionalMedia();
+    if (!mediaArray || mediaArray.length === 0) return null;
+
+    return (
+      <div className={`product-additional-images ${this.renderVisible()}`}>
+        {mediaArray.map((media) => (
+          <span
+            key={media._id}
+            className="product-image"
+            style={{ backgroundImage: `url('${media.url({ store: "medium" })}')` }}
+          />
+        ))}
+        {this.renderOverlay()}
+      </div>
+    );
   }
 
   renderNotices() {

@@ -5,7 +5,8 @@ import { ReactiveDict } from "meteor/reactive-dict";
 import { Reaction } from "/client/api";
 import Logger from "/client/modules/logger";
 import { ReactionProduct } from "/lib/api";
-import { Media, Products } from "/lib/collections";
+import { Products } from "/lib/collections";
+import { Media } from "/imports/plugins/core/files/client";
 import { isRevisionControlEnabled } from "/imports/plugins/core/revisions/lib/api";
 import { applyProductRevision } from "/lib/api/products";
 
@@ -95,13 +96,11 @@ Template.productSettingsListItem.helpers({
   },
 
   media() {
-    const media = Media.findOne({
+    return Media.findOneLocal({
       "metadata.productId": this._id,
       "metadata.workflow": { $nin: ["archived"] },
       "metadata.toGrid": 1
     }, { sort: { uploadedAt: 1 } });
-
-    return media instanceof FS.File ? media : false;
   },
 
   listItemActiveClassName(productId) {
